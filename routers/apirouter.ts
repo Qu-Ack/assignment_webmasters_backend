@@ -1,13 +1,39 @@
 import { Router, Request, Response } from "express";
-import { loginHandler} from "../handlers/roleHandler";
+import {
+  adminAuth,
+  loginHandler,
+  superAdminAuth,
+} from "../handlers/roleHandler";
 import { createTestUserHandler } from "../handlers/createTestUserHandler";
+import {
+  handleDeleteAnnouncements,
+  handleGetAnnoucements,
+  handlePostAnnoucements,
+  handleUpdateAnnouncements,
+} from "../handlers/announcementHandlers";
 
+const router = Router();
 
-const router = Router()
+// admin router
+router.post("/admin", loginHandler);
+router.get(
+  "/test/superadmin",
+  superAdminAuth,
+  (req: Request, res: Response) => {
+    res.send("working");
+  },
+);
+router.post("/admin/create", createTestUserHandler);
 
-// admin route
+// announcements route
+router.get("/announcement", handleGetAnnoucements);
+router.post("/announcement", adminAuth, handlePostAnnoucements);
+router.put("/announcement", adminAuth, handleUpdateAnnouncements);
+router.delete("/announcement", adminAuth, handleDeleteAnnouncements);
 
-router.post("/admin", loginHandler)
-router.post("/admin/create", createTestUserHandler)
+// events route
 
-export default router
+router.get("/events");
+
+export default router;
+
